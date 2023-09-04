@@ -1,0 +1,92 @@
+{
+    "routes": [
+        {
+            "route": "/login*",
+            "allowedRoles": [ "anonymous" ],
+            "rewrite": "/.auth/login/b2c"
+        },
+        {
+            "route": "/logout*",
+            "allowedRoles": [ "authenticated" ],
+            "rewrite": "/.auth/logout"
+        },
+        {
+            "route": "/.auth/me",
+            "allowedRoles": [ "authenticated" ]
+        },
+        {
+            "route": "/.auth/login/b2c",
+            "allowedRoles": [ "anonymous" ]
+        },
+        {
+            "route": "/.auth/login/aad",
+            "allowedRoles": [ "anonymous", "authenticated" ],
+            "statusCode": 404
+        },
+        {
+            "route": "/.auth/login/apple",
+            "allowedRoles": [ "anonymous", "authenticated" ],
+            "statusCode": 404
+        },
+        {
+            "route": "/.auth/login/facebook",
+            "allowedRoles": [ "anonymous", "authenticated" ],
+            "statusCode": 404
+        },
+        {
+            "route": "/.auth/login/github",
+            "allowedRoles": [ "anonymous", "authenticated" ],
+            "statusCode": 404
+        },
+        {
+            "route": "/.auth/login/google",
+            "allowedRoles": [ "anonyous", "authenticated" ],
+            "statusCode": 404
+        },
+        {
+            "route": "/.auth/login/twitter",
+            "allowedRoles": [ "anonymous", "authenticated" ],
+            "statusCode": 404
+        }
+        //{
+        //    "route": "/api/*",
+        //    "allowedRoles": [ "authenticated" ]
+        //}
+    ],
+    "navigationFallback": {
+        "rewrite": "/index.html",
+        "exclude": [
+            "/css/*",
+            "/img/*",
+            "/js/*"
+        ]
+    },
+    "responseOverrides": {
+        "401": {
+            "statusCode": 302,
+            "redirect": "/.auth/login/b2c"
+        }
+    },
+    "auth": {
+        "identityProviders": {
+            "customOpenIdConnectProviders": {
+                "b2c": {
+                    "registration": {
+                        "clientIdSettingName": "B2C_CLIENT_ID",
+                        "clientCredential": {
+                            "clientSecretSettingName": "B2C_CLIENT_SECRET"
+                        },
+                        "openIdConnectConfiguration": {
+                            "wellKnownOpenIdConfiguration": "https://dottornetb2c.b2clogin.com/dottornetb2c.onmicrosoft.com/B2C_1_blazor_demo/v2.0/.well-known/openid-configuration"
+                        }
+                    },
+                    "login": {
+                        "nameClaimType": "name",
+                        "scopes": [],
+                        "loginParameterNames": []
+                    }
+                }
+            }
+        }
+    }
+}
