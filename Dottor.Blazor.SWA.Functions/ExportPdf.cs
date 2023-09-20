@@ -1,6 +1,8 @@
+namespace Dottor.Blazor.SWA.Functions;
+
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Net;
+using System.Security.Claims;
 using Dottor.Blazor.SWA.Functions.Services;
 using Dottor.Blazor.SWA.Functions.Utilities;
 using Dottor.Blazor.SWA.Models;
@@ -11,7 +13,6 @@ using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
-namespace Dottor.Blazor.SWA.Functions;
 
 public class ExportPdf
 {
@@ -29,15 +30,23 @@ public class ExportPdf
     {
         _logger.LogInformation("C# HTTP trigger function processed a request.");
 
+#if !DEBUG
+        // https://github.com/MollsAndHersh/swa-authentication/
         var clientPrinciple = StaticWebApiAppAuthorization.ParseHttpHeaderForClientPrinciple(req);
         var claimsPrinciple = ClientPrincipleToClaimsPrinciple.GetClaimsFromClientClaimsPrincipal(clientPrinciple);
 
         if (claimsPrinciple.Identity is null || !claimsPrinciple.Identity.IsAuthenticated)
             return req.CreateResponse(HttpStatusCode.Unauthorized);
+#endif
 
         var shoppingList = await _shoppingService.GetShoppingListAsync(id);
         if(shoppingList is null)
             return req.CreateResponse(HttpStatusCode.NotFound);
+        
+#if !DEBUG
+        if(clientPrinciple.UserId != shoppingList.UserId)
+            return req.CreateResponse(HttpStatusCode.Unauthorized);
+#endif
 
         var items = await _shoppingService.GetItemsAsync(id);
         var file = Generate(shoppingList, items);
