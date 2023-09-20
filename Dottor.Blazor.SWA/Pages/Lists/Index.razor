@@ -28,7 +28,7 @@ else
                     <a href="#" class="btn btn-sm btn-warning"
                        title="Remove from favorites"
                        @onclick="async () => await UpdateFavorite(item.Id, false)"
-                    @onclick:preventDefault>
+                       @onclick:preventDefault>
                         <i class="oi oi-star"></i>
                     </a>
                 }
@@ -37,7 +37,7 @@ else
                     <a href="#" class="btn btn-sm btn-outline-secondary"
                        title="Add to favorites"
                        @onclick="async () => await UpdateFavorite(item.Id, true)"
-                    @onclick:preventDefault>
+                       @onclick:preventDefault>
                         <i class="oi oi-star"></i>
                     </a>
                 }
@@ -45,7 +45,7 @@ else
 
                 <a href="#" class="btn btn-sm btn-outline-danger ms-2" title="delete"
                    @onclick="async () => await Delete(item.Id)"
-                @onclick:preventDefault>
+                   @onclick:preventDefault>
                     <i class="oi oi-trash"></i>
                 </a>
             </a>
