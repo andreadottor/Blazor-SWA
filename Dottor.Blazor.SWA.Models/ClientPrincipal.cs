@@ -1,5 +1,6 @@
 ﻿namespace Dottor.Blazor.SWA.Models
 {
+    using System.Collections.Generic;
     using System.Text.Json.Serialization;
 
     public class ClientPrincipal

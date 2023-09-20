@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Net;
 using Dottor.Blazor.SWA.Functions.Services;
+using Dottor.Blazor.SWA.Functions.Utilities;
 using Dottor.Blazor.SWA.Models;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
@@ -24,20 +25,21 @@ public class ExportPdf
     }
 
     [Function(nameof(ExportPdf))]
-    public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
+    public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "ExportPdf/{id:guid}")] HttpRequestData req, Guid id)
     {
         _logger.LogInformation("C# HTTP trigger function processed a request.");
 
-        var idArg = req.Query["id"];
-        if (string.IsNullOrWhiteSpace(idArg))
-            return req.CreateResponse(HttpStatusCode.BadRequest);
+        var clientPrinciple = StaticWebApiAppAuthorization.ParseHttpHeaderForClientPrinciple(req);
+        var claimsPrinciple = ClientPrincipleToClaimsPrinciple.GetClaimsFromClientClaimsPrincipal(clientPrinciple);
 
-        var shoppingListId = Guid.Parse(idArg);
-        var shoppingList = await _shoppingService.GetShoppingListAsync(shoppingListId);
+        if (claimsPrinciple.Identity is null || !claimsPrinciple.Identity.IsAuthenticated)
+            return req.CreateResponse(HttpStatusCode.Unauthorized);
+
+        var shoppingList = await _shoppingService.GetShoppingListAsync(id);
         if(shoppingList is null)
             return req.CreateResponse(HttpStatusCode.NotFound);
 
-        var items = await _shoppingService.GetItemsAsync(shoppingListId);
+        var items = await _shoppingService.GetItemsAsync(id);
         var file = Generate(shoppingList, items);
         var fileName = GetFileName(shoppingList.Title);
 
