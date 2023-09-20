@@ -3,25 +3,33 @@
 
 <div class="card">
     <div class="card-body">
-
+        <h5 class="card-title">Create new list</h5>
         <EditForm Model="this" OnValidSubmit="Save">
-            <div class="form-group">
-                <label for="txtListTitle">Name</label>
-                <InputText @bind-Value="Title" class="form-control" id="txtListTitle" />
+            <DataAnnotationsValidator />
+
+            <div class="row">
+                <div class="col-sm-5">
+                    <div class="form-floating mb-3">
+                        <InputText @bind-Value="Title" class="form-control" id="txtListTitle" placeholder="Name of the shopping list" />
+                        <label for="txtListTitle">Name</label>
+                    </div>
+                </div>
+                <div class="col">
+                    <button type="submit" class="btn btn-outline-success btn-lg mt-1">Create</button>
+                </div>
             </div>
 
-            <button type="submit" class="btn btn-primary">Create</button>
         </EditForm>
 
     </div>
 </div>
 
 @code {
-    [Required]
-    public string Title { get; set; } = string.Empty;
+    [Required] 
+    [StringLength(100, MinimumLength = 3)]
+    public string? Title { get; set; }
 
-    [CascadingParameter]
-    public Task<AuthenticationState>? AuthState { get; set; }
+    [CascadingParameter] public Task<AuthenticationState>? AuthState { get; set; }
 
     public async Task Save()
     {
@@ -32,11 +40,11 @@
         var shoppingList = new ShoppingList()
             {
                 Id = id,
-                Title = Title,
+                Title = Title!,
                 CreationDate = DateTime.Now,
                 UserId = userIdClaim!.Value
             };
-        await ShoppingService.InsertShoppingList(shoppingList);
+        await ShoppingService.InsertShoppingListAsync(shoppingList);
 
         NavigationManager.NavigateTo($"/lists/{id}");
     }

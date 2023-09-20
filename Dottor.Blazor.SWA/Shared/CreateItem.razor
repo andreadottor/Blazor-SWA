@@ -1,0 +1,77 @@
+﻿@inject IShoppingService ShoppingService
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Add product</h5>
+        <EditForm Model="this" OnValidSubmit="Save">
+            <DataAnnotationsValidator />
+
+            <div class="row">
+                <div class="col-md-5 col-sm-5">
+                    <div class="form-floating mb-3">
+                        <InputText @bind-Value="Name" class="form-control" id="txtName" placeholder="Product name" />
+                        <label for="txtName">Name</label>
+                    </div>
+                    <ValidationMessage For="() => Name" class="text-danger" />
+                </div>
+                <div class="col-md-2 col-sm-5">
+                    <div class="form-floating mb-3 overflow-hidden">
+                        <InputNumber @bind-Value="Quantity" class="form-control" id="txtQta" placeholder="Number of products" />
+                        <label for="txtQta">Quantity</label>
+                    </div>
+                    <ValidationMessage For="() => Quantity" class="text-danger" />
+                </div>
+                <div class="col">
+                    <button type="submit" class="btn btn-outline-success btn-lg mt-1">Add</button>
+                </div>
+            </div>
+
+        </EditForm>
+
+    </div>
+</div>
+
+@code {
+    [Parameter] 
+    public EventCallback ItemAdded { get; set; } = default!;
+
+    [Parameter, EditorRequired] 
+    public Guid ShoppingListId { get; set; }
+
+    [Required(AllowEmptyStrings = false)]
+    [StringLength(100, MinimumLength = 3)]
+    public string? Name { get; set; }
+
+    [Range(0, 100)]
+    public int? Quantity { get; set; }
+
+    [CascadingParameter] public Task<AuthenticationState>? AuthState { get; set; }
+
+    public async Task Save()
+    {
+        var authState = await AuthState!;
+        var userIdClaim = authState.User.FindFirst(ClaimTypes.NameIdentifier);
+
+        var id = Guid.NewGuid();
+        var item = new ShoppingItem()
+            {
+                Id = id,
+                ShoppingListId = ShoppingListId,
+                Name = Name!,
+                Quantity = Quantity == 0 ? null : Quantity,
+                CreationDate = DateTime.Now,
+                UserId = userIdClaim!.Value
+            };
+        await ShoppingService.AddItem(ShoppingListId, item);
+
+        ResetForm();
+
+        await ItemAdded.InvokeAsync();
+    }
+
+    private void ResetForm()
+    {
+        Name = null;
+        Quantity = null;
+    }
+}

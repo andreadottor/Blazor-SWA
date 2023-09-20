@@ -1,0 +1,41 @@
+﻿@page "/lists/{Id:guid}"
+@attribute [Authorize]
+@inject IShoppingService ShoppingService
+
+<h3>Shopping list: @_shoppingList?.Title</h3>
+<p class="text-muted">
+    Created on @_shoppingList?.CreationDate.ToString("dd MMM yyyy")
+</p>
+<CreateItem ShoppingListId="Id" ItemAdded="Refresh" />
+
+
+<hr />
+
+@foreach (var item in _items)
+{
+    <div>
+        @item.Name
+
+        <strong>@item.Quantity</strong>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private IEnumerable<ShoppingItem> _items = Enumerable.Empty<ShoppingItem>();
+    private ShoppingList? _shoppingList;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        _shoppingList = await ShoppingService.GetShoppingListAsync(Id);
+        await Refresh();
+    }
+
+    private async Task Refresh()
+    {
+        _items = await ShoppingService.GetItemsAsync(Id);
+    }
+}
