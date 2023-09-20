@@ -1,12 +1,16 @@
 ﻿@page "/lists/{Id:guid}"
 @attribute [Authorize]
 @inject IShoppingService ShoppingService
+@inject NavigationManager NavigationManager
+
+<a href="/api/ExportPdf?id=@Id" target="_blank" class="btn btn-outline-primary float-end">Export list</a>
 
 <h3>Shopping list: @_shoppingList?.Title</h3>
 <p class="text-muted">
     Created on @_shoppingList?.CreationDate.ToString("dd MMM yyyy")
 </p>
 <CreateItem ShoppingListId="Id" ItemAdded="Refresh" />
+
 
 
 <hr />
@@ -38,4 +42,5 @@
     {
         _items = await ShoppingService.GetItemsAsync(Id);
     }
+
 }

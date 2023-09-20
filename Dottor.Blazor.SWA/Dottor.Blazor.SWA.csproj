@@ -13,4 +13,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="7.0.10" PrivateAssets="all" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Dottor.Blazor.SWA.Models\Dottor.Blazor.SWA.Models.csproj" />
+  </ItemGroup>
+
 </Project>
