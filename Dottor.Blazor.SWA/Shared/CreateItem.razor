@@ -1,7 +1,7 @@
 ﻿@inject IShoppingService ShoppingService
 
-<div class="card">
-    <div class="card-body">
+<div class="card border-success">
+    <div class="card-body p-2">
         <h5 class="card-title">Add product</h5>
         <EditForm Model="this" OnValidSubmit="Save">
             <DataAnnotationsValidator />
@@ -62,7 +62,7 @@
                 CreationDate = DateTime.Now,
                 UserId = userIdClaim!.Value
             };
-        await ShoppingService.AddItem(ShoppingListId, item);
+        await ShoppingService.AddItemAsync(ShoppingListId, item);
 
         ResetForm();
 

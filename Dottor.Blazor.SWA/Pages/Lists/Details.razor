@@ -2,25 +2,86 @@
 @attribute [Authorize]
 @inject IShoppingService ShoppingService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JS
 
-<a href="/api/ExportPdf?id=@Id" target="_blank" class="btn btn-outline-primary float-end">Export list</a>
+<a href="/api/ExportPdf?id=@Id" target="_blank" class="btn btn-outline-primary float-end">
+    Export pdf
+    <i class="oi oi-data-transfer-download"></i>
+</a>
 
-<h3>Shopping list: @_shoppingList?.Title</h3>
+<h3><small class="text-muted">Shopping list:</small> @_shoppingList?.Title</h3>
 <p class="text-muted">
-    Created on @_shoppingList?.CreationDate.ToString("dd MMM yyyy")
+    Created on <em>@_shoppingList?.CreationDate.ToString("dd MMM yyyy")</em>
 </p>
 <CreateItem ShoppingListId="Id" ItemAdded="Refresh" />
 
-
-
 <hr />
 
-@foreach (var item in _items)
+@if (_items is null)
 {
-    <div>
-        @item.Name
+    <p>Loading ... </p>
+}
+else
+{
+    <div class="list-group">
+        @foreach (var item in _items)
+        {
+            <div class="list-group-item d-flex justify-content-between align-items-center @(item.Important ? "list-group-item-warning" : "")">
+                @if (item.Quantity is not null)
+                {
+                    <span class="badge bg-primary me-3" style="width:30px;">@item.Quantity</span>
+                }
+                else
+                {
+                    <span class="badge bg-light me-3" style="width:30px;">&nbsp;</span>
+                }
 
-        <strong>@item.Quantity</strong>
+                <span style="flex: 1">
+
+                    @item.Name
+                </span>
+
+                <a href="#" class="btn btn-sm btn-outline-secondary ms-2"
+                   title="Add to favorites"
+                   @onclick="async () => await UpdateQuantity(item.Id, (item.Quantity ?? 1) + 1)"
+                @onclick:preventDefault>
+                    <i class="oi oi-plus"></i>
+                </a>
+
+                <a href="#" class="btn btn-sm btn-outline-secondary ms-2"
+                   title="Add to favorites"
+                   @onclick="async () => await UpdateQuantity(item.Id, (item.Quantity ?? 1) - 1)"
+                @onclick:preventDefault>
+                    <i class="oi oi-minus"></i>
+                </a>
+
+                @if (item.Important)
+                {
+                    <a href="#" class="btn btn-sm btn-warning ms-2"
+                       title="Remove from important"
+                       @onclick="async () => await UpdateImportant(item.Id, false)"
+                    @onclick:preventDefault>
+                        <i class="oi oi-pin"></i>
+                    </a>
+                }
+                else
+                {
+                    <a href="#" class="btn btn-sm btn-outline-secondary ms-2"
+                       title="Add to important"
+                       @onclick="async () => await UpdateImportant(item.Id, true)"
+                    @onclick:preventDefault>
+                        <i class="oi oi-pin"></i>
+                    </a>
+                }
+
+                <a href="#" class="btn btn-sm btn-outline-danger ms-2" title="delete"
+                   @onclick="async () => await DeleteItem(item.Id)"
+                @onclick:preventDefault>
+                    <i class="oi oi-trash"></i>
+                </a>
+            </div>
+
+        }
     </div>
 }
 
@@ -28,7 +89,7 @@
     [Parameter]
     public Guid Id { get; set; }
 
-    private IEnumerable<ShoppingItem> _items = Enumerable.Empty<ShoppingItem>();
+    private IEnumerable<ShoppingItem>? _items;
     private ShoppingList? _shoppingList;
 
 
@@ -43,4 +104,28 @@
         _items = await ShoppingService.GetItemsAsync(Id);
     }
 
+    private async Task UpdateQuantity(Guid itemId, int quantity)
+    {
+        if (quantity > 0)
+        {
+            await ShoppingService.SetItemQuantityAsync(itemId, quantity);
+            await Refresh();
+        }
+    }
+
+    private async Task UpdateImportant(Guid itemId, bool important)
+    {
+        await ShoppingService.SetItemImportantAsync(itemId, important);
+        await Refresh();
+    }
+
+    private async Task DeleteItem(Guid itemId)
+    {
+        var result = await JS.InvokeAsync<bool>("confirm", "Are you sure?");
+        if (result)
+        {
+            await ShoppingService.DeleteItemAsync(itemId);
+            await Refresh();
+        }
+    }
 }

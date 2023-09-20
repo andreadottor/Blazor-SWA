@@ -7,13 +7,17 @@
 
     public interface IShoppingService
     {
-        Task AddItem(Guid shoppingList, ShoppingItem shoppingItem);
+        Task AddItemAsync(Guid shoppingList, ShoppingItem shoppingItem);
+        Task DeleteItemAsync(Guid itemId);
+        Task SetItemQuantityAsync(Guid itemId, int? quantity);
+        Task SetItemImportantAsync(Guid itemId, bool important);
         Task<IEnumerable<ShoppingItem>> GetItemsAsync(Guid shoppingList);
+
 
         Task<IEnumerable<ShoppingList>> GetShoppingListsAsync();
         Task<ShoppingList?> GetShoppingListAsync(Guid shoppingList);
         Task InsertShoppingListAsync(ShoppingList shoppingList);
         Task DeleteShoppingListAsync(Guid shoppingList);
-        Task ShoppingListSetFavoriteAsync(Guid shoppingList, bool favorite);
+        Task SetShoppingListFavoriteAsync(Guid shoppingList, bool favorite);
     }
 }

@@ -1,102 +1,133 @@
-﻿namespace Dottor.Blazor.SWA.Services
+﻿namespace Dottor.Blazor.SWA.Services;
+
+using Dottor.Blazor.SWA.Models;
+using Microsoft.AspNetCore.Components.Authorization;
+using System.Net.Http.Json;
+using System.Security.Claims;
+
+public class ShoppingService : IShoppingService
 {
-    using Dottor.Blazor.SWA.Models;
-    using Microsoft.AspNetCore.Components.Authorization;
-    using System.Net.Http.Json;
-    using System.Security.Claims;
-    using System.Text.Json;
+    private readonly HttpClient _httpClient;
+    private readonly ILogger<ShoppingService> _logger;
+    private readonly AuthenticationStateProvider _authenticationStateProvider;
 
-    public class ShoppingService : IShoppingService
+    public ShoppingService(HttpClient httpClient,
+                           ILogger<ShoppingService> logger,
+                           AuthenticationStateProvider authenticationStateProvider)
     {
-        private readonly HttpClient _httpClient;
-        private readonly ILogger<ShoppingService> _logger;
-        private readonly AuthenticationStateProvider _authenticationStateProvider;
+        _httpClient = httpClient;
+        _logger = logger;
+        _authenticationStateProvider = authenticationStateProvider;
+    }
 
-        public ShoppingService(HttpClient httpClient,
-                               ILogger<ShoppingService> logger,
-                               AuthenticationStateProvider authenticationStateProvider)
+    public async Task<IEnumerable<ShoppingList>> GetShoppingListsAsync()
+    {
+        var orderBy = $"$orderby=favorite desc, title";
+        var results = await _httpClient.GetFromJsonAsync<DABResult<IEnumerable<ShoppingList>>>($"data-api/rest/lists?{orderBy}");
+
+        if (results is null || results.Value is null)
         {
-            _httpClient = httpClient;
-            _logger = logger;
-            _authenticationStateProvider = authenticationStateProvider;
+            _logger.LogWarning("No shopping lists found for the user.");
+            return Enumerable.Empty<ShoppingList>();
         }
 
-        public async Task<IEnumerable<ShoppingList>> GetShoppingListsAsync()
+        return results.Value;
+    }
+
+    public async Task<ShoppingList?> GetShoppingListAsync(Guid shoppingList)
+    {
+        var results = await _httpClient.GetFromJsonAsync<DABResult<IEnumerable<ShoppingList>>>($"data-api/rest/lists/id/{shoppingList}");
+
+        if (results is null || results.Value is null)
         {
-            var orderBy = $"$orderby=favorite desc, title";
-            var results = await _httpClient.GetFromJsonAsync<DABResult<IEnumerable<ShoppingList>>>($"data-api/rest/lists?{orderBy}");
-
-            if (results is null || results.Value is null)
-            {
-                _logger.LogWarning("No shopping lists found for the user.");
-                return Enumerable.Empty<ShoppingList>();
-            }
-
-            return results.Value;
+            _logger.LogWarning("No shopping lists with the specified id.");
+            return null;
         }
 
-        public async Task<ShoppingList?> GetShoppingListAsync(Guid shoppingList)
+        return results.Value.First();
+    }
+
+    public async Task InsertShoppingListAsync(ShoppingList shoppingList)
+    {
+        var response = await _httpClient.PostAsJsonAsync("data-api/rest/lists", shoppingList);
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task DeleteShoppingListAsync(Guid shoppingList)
+    {
+        var response = await _httpClient.DeleteAsync($"data-api/rest/lists/id/{shoppingList}");
+        response.EnsureSuccessStatusCode();
+    }
+
+    public async Task SetShoppingListFavoriteAsync(Guid shoppingList, bool favorite)
+    {
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var userIdClaim = authState.User.FindFirst(ClaimTypes.NameIdentifier);
+
+        var response = await _httpClient.PatchAsJsonAsync($"data-api/rest/lists/id/{shoppingList}",
+                new
+                {
+                    favorite = favorite,
+                    userId = userIdClaim?.Value
+                });
+        response.EnsureSuccessStatusCode();
+    }
+
+
+    public async Task<IEnumerable<ShoppingItem>> GetItemsAsync(Guid shoppingList)
+    {
+        var filter = $"$filter=shoppingListId eq {shoppingList}";
+        var orderBy = $"$orderby=important desc, name";
+        var results = await _httpClient.GetFromJsonAsync<DABResult<IEnumerable<ShoppingItem>>>($"data-api/rest/items?{filter}&{orderBy}");
+
+        if (results is null || results.Value is null)
         {
-            var results = await _httpClient.GetFromJsonAsync<DABResult<IEnumerable<ShoppingList>>>($"data-api/rest/lists/id/{shoppingList}");
-
-            if (results is null || results.Value is null)
-            {
-                _logger.LogWarning("No shopping lists with the specified id.");
-                return null;
-            }
-
-            return results.Value.First();
+            _logger.LogWarning("Shopping list is empty.");
+            return Enumerable.Empty<ShoppingItem>();
         }
 
-        public async Task InsertShoppingListAsync(ShoppingList shoppingList)
-        {
-            var response = await _httpClient.PostAsJsonAsync("data-api/rest/lists", shoppingList);
-            response.EnsureSuccessStatusCode();
-        }
+        return results.Value;
+    }
 
-        public async Task DeleteShoppingListAsync(Guid shoppingList)
-        {
-            var response = await _httpClient.DeleteAsync($"data-api/rest/lists/id/{shoppingList}");
-            response.EnsureSuccessStatusCode();
-        }
+    public async Task AddItemAsync(Guid shoppingList, ShoppingItem shoppingItem)
+    {
+        shoppingItem.ShoppingListId = shoppingList;
 
-        public async Task ShoppingListSetFavoriteAsync(Guid shoppingList, bool favorite)
-        {
-            var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
-            var userIdClaim = authState.User.FindFirst(ClaimTypes.NameIdentifier);
+        var response = await _httpClient.PostAsJsonAsync("data-api/rest/items", shoppingItem);
+        response.EnsureSuccessStatusCode();
+    }
 
-            var response = await _httpClient.PatchAsJsonAsync($"data-api/rest/lists/id/{shoppingList}", 
-                    new { 
-                        favorite = favorite,
-                        userId = userIdClaim?.Value
-                    });
-            response.EnsureSuccessStatusCode();
-        }
+    public async Task DeleteItemAsync(Guid itemId)
+    {
+        var response = await _httpClient.DeleteAsync($"data-api/rest/items/id/{itemId}");
+        response.EnsureSuccessStatusCode();
+    }
 
+    public async Task SetItemQuantityAsync(Guid itemId, int? quantity)
+    {
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var userIdClaim = authState.User.FindFirst(ClaimTypes.NameIdentifier);
 
-        public async Task<IEnumerable<ShoppingItem>> GetItemsAsync(Guid shoppingList)
-        {
-            var filter = $"$filter=shoppingListId eq {shoppingList}";
-            var orderBy = $"$orderby=name";
-            var results = await _httpClient.GetFromJsonAsync<DABResult<IEnumerable<ShoppingItem>>>($"data-api/rest/items?{filter}&{orderBy}");
+        var response = await _httpClient.PatchAsJsonAsync($"data-api/rest/items/id/{itemId}",
+                new
+                {
+                    quantity = quantity,
+                    userId   = userIdClaim?.Value
+                });
+        response.EnsureSuccessStatusCode();
+    }
 
-            if (results is null || results.Value is null)
-            {
-                _logger.LogWarning("Shopping list is empty.");
-                return Enumerable.Empty<ShoppingItem>();
-            }
+    public async Task SetItemImportantAsync(Guid itemId, bool important)
+    {
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var userIdClaim = authState.User.FindFirst(ClaimTypes.NameIdentifier);
 
-            return results.Value;
-        }
-
-        public async Task AddItem(Guid shoppingList, ShoppingItem shoppingItem)
-        {
-            shoppingItem.ShoppingListId = shoppingList;
-
-            var response = await _httpClient.PostAsJsonAsync("data-api/rest/items", shoppingItem);
-            response.EnsureSuccessStatusCode();
-        }
-
-
+        var response = await _httpClient.PatchAsJsonAsync($"data-api/rest/items/id/{itemId}",
+                new
+                {
+                    important = important,
+                    userId   = userIdClaim?.Value
+                });
+        response.EnsureSuccessStatusCode();
     }
 }
