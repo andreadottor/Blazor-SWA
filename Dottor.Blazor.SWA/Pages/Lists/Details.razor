@@ -106,11 +106,8 @@ else
 
     private async Task UpdateQuantity(Guid itemId, int quantity)
     {
-        if (quantity > 0)
-        {
-            await ShoppingService.SetItemQuantityAsync(itemId, quantity);
-            await Refresh();
-        }
+        await ShoppingService.SetItemQuantityAsync(itemId, quantity <= 0 ? null : quantity);
+        await Refresh();
     }
 
     private async Task UpdateImportant(Guid itemId, bool important)
