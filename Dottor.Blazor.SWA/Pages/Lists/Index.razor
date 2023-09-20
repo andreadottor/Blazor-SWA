@@ -1,0 +1,9 @@
+﻿@page "/lists/{Id:guid}"
+<h3>Index</h3>
+
+<p>@Id</p>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+}

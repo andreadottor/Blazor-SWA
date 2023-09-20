@@ -1,0 +1,43 @@
+﻿@inject IShoppingService ShoppingService
+@inject NavigationManager NavigationManager
+
+<div class="card">
+    <div class="card-body">
+
+        <EditForm Model="this" OnValidSubmit="Save">
+            <div class="form-group">
+                <label for="txtListTitle">Name</label>
+                <InputText @bind-Value="Title" class="form-control" id="txtListTitle" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+
+    </div>
+</div>
+
+@code {
+    [Required]
+    public string Title { get; set; } = string.Empty;
+
+    [CascadingParameter]
+    public Task<AuthenticationState>? AuthState { get; set; }
+
+    public async Task Save()
+    {
+        var authState = await AuthState!;
+        var userIdClaim = authState.User.FindFirst(ClaimTypes.NameIdentifier);
+
+        var id = Guid.NewGuid();
+        var shoppingList = new ShoppingList()
+            {
+                Id = id,
+                Title = Title,
+                CreationDate = DateTime.Now,
+                UserId = userIdClaim!.Value
+            };
+        await ShoppingService.InsertShoppingList(shoppingList);
+
+        NavigationManager.NavigateTo($"/lists/{id}");
+    }
+}

@@ -399,3 +399,4 @@ FodyWeavers.xsd
 
 # environment
 .env
+Database.publish.xml

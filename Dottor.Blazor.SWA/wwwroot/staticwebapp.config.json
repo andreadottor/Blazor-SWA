@@ -47,11 +47,11 @@
             "route": "/.auth/login/twitter",
             "allowedRoles": [ "anonymous", "authenticated" ],
             "statusCode": 404
+        },
+        {
+            "route": "/api/*",
+            "allowedRoles": [ "authenticated" ]
         }
-        //{
-        //    "route": "/api/*",
-        //    "allowedRoles": [ "authenticated" ]
-        //}
     ],
     "navigationFallback": {
         "rewrite": "/index.html",

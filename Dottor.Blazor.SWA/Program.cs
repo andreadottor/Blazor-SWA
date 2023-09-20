@@ -13,4 +13,6 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddAuthorizationCore()
                 .AddScoped<AuthenticationStateProvider, StaticWebAppsAuthenticationStateProvider>();
 
+builder.Services.AddScoped<IShoppingService, ShoppingService>();
+
 await builder.Build().RunAsync();

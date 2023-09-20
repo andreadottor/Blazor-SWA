@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="147513a3-dae1-490c-9e16-deef1d3cfd5c" ChangeDateTime="09/20/2023 08:26:27">
+    <Property Name="ElementName" Value="[dbo].[ShoppingItems].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ShoppingItems]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="id" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4589fb3d-1da2-45c8-b49a-03537be9565a" ChangeDateTime="09/20/2023 08:26:32">
+    <Property Name="ElementName" Value="[dbo].[ShoppingItems].[ShoppingListId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ShoppingItems]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="shoppingListId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="8c1f45f8-aae7-4062-9d45-e19a6c09a628" ChangeDateTime="09/20/2023 08:26:36">
+    <Property Name="ElementName" Value="[dbo].[ShoppingItems].[UserId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ShoppingItems]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="userId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="7ede75ba-9fe3-4970-9706-e2566e115520" ChangeDateTime="09/20/2023 08:26:39">
+    <Property Name="ElementName" Value="[dbo].[ShoppingItems].[Name]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ShoppingItems]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="name" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="a2c3e59f-68dd-4af9-82e6-769672386284" ChangeDateTime="09/20/2023 08:26:42">
+    <Property Name="ElementName" Value="[dbo].[ShoppingItems].[Quantity]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ShoppingItems]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="quantity" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="bd9d896d-fb11-46a5-8524-b89c37522cea" ChangeDateTime="09/20/2023 08:26:45">
+    <Property Name="ElementName" Value="[dbo].[ShoppingItems].[CreationDate]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ShoppingItems]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="creationDate" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c6394bd0-8999-488b-b7ff-55a9ec2ab1c6" ChangeDateTime="09/20/2023 08:26:47">
+    <Property Name="ElementName" Value="[dbo].[ShoppingItems].[Important]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ShoppingItems]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="important" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6b5b0886-28ca-4048-8493-6f2dc9707b57" ChangeDateTime="09/20/2023 08:27:04">
+    <Property Name="ElementName" Value="[dbo].[ShoppingLists].[Id]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ShoppingLists]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="id" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="2c3efbac-4c64-459b-907e-7a66e74aa397" ChangeDateTime="09/20/2023 08:27:10">
+    <Property Name="ElementName" Value="[dbo].[ShoppingLists].[UserId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ShoppingLists]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="userId" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="20a89c0d-5e5e-4daf-9d71-01638e451d63" ChangeDateTime="09/20/2023 08:27:13">
+    <Property Name="ElementName" Value="[dbo].[ShoppingLists].[Title]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ShoppingLists]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="title" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="57ca873b-5b3e-4cb8-80d6-c09da8f47c29" ChangeDateTime="09/20/2023 08:27:17">
+    <Property Name="ElementName" Value="[dbo].[ShoppingLists].[CreationDate]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ShoppingLists]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="creationDate" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="f5ca28a6-59d0-4eca-8beb-6ad98eccbc75" ChangeDateTime="09/20/2023 08:27:20">
+    <Property Name="ElementName" Value="[dbo].[ShoppingLists].[CompletedDate]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ShoppingLists]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="completedDate" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="4cf5b1a5-4053-4641-bae2-60d7ff512ee1" ChangeDateTime="09/20/2023 08:27:22">
+    <Property Name="ElementName" Value="[dbo].[ShoppingLists].[Favorite]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[dbo].[ShoppingLists]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="favorite" />
+  </Operation>
+</Operations>

@@ -31,8 +31,9 @@
                 {
                     if (principal.UserRoles is not null)
                         principal.UserRoles = principal.UserRoles.Except(new string[] { "anonymous" }, StringComparer.CurrentCultureIgnoreCase);
-
+                    
                     var identity = new ClaimsIdentity(principal.IdentityProvider);
+                    if (principal.UserId is not null) identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, principal.UserId));
                     if (principal.UserDetails is not null) identity.AddClaim(new Claim(ClaimTypes.Name, principal.UserDetails));
                     if (principal.UserRoles is not null) identity.AddClaims(principal.UserRoles.Select(r => new Claim(ClaimTypes.Role, r)));
                     if (principal.Claims is not null)
