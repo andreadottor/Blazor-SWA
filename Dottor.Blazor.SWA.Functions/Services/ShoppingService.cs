@@ -14,7 +14,7 @@ internal class ShoppingService : IShoppingService
 
     public ShoppingService(IConfiguration configuration)
     {
-        _connectionString = configuration.GetConnectionString("ShoppingListDatabase");
+        _connectionString = configuration.GetValue<string>("ShoppingListDatabase");
     }
 
     public async Task<IEnumerable<ShoppingItem>> GetItemsAsync(Guid shoppingList)
