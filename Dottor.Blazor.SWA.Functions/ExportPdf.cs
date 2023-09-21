@@ -2,7 +2,6 @@ namespace Dottor.Blazor.SWA.Functions;
 
 using System.Collections.Generic;
 using System.Net;
-using System.Security.Claims;
 using Dottor.Blazor.SWA.Functions.Services;
 using Dottor.Blazor.SWA.Functions.Utilities;
 using Dottor.Blazor.SWA.Models;
@@ -26,27 +25,23 @@ public class ExportPdf
     }
 
     [Function(nameof(ExportPdf))]
-    public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "ExportPdf/{id:guid}")] HttpRequestData req, Guid id)
+    public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Function, "get", Route = "ExportPdf/{id:guid}")] HttpRequestData req, Guid id)
     {
         _logger.LogInformation("C# HTTP trigger function processed a request.");
 
-#if !DEBUG
         // https://github.com/MollsAndHersh/swa-authentication/
         var clientPrinciple = StaticWebApiAppAuthorization.ParseHttpHeaderForClientPrinciple(req);
         var claimsPrinciple = ClientPrincipleToClaimsPrinciple.GetClaimsFromClientClaimsPrincipal(clientPrinciple);
 
         if (claimsPrinciple.Identity is null || !claimsPrinciple.Identity.IsAuthenticated)
             return req.CreateResponse(HttpStatusCode.Unauthorized);
-#endif
 
         var shoppingList = await _shoppingService.GetShoppingListAsync(id);
         if(shoppingList is null)
             return req.CreateResponse(HttpStatusCode.NotFound);
         
-#if !DEBUG
         if(clientPrinciple.UserId != shoppingList.UserId)
             return req.CreateResponse(HttpStatusCode.Unauthorized);
-#endif
 
         var items = await _shoppingService.GetItemsAsync(id);
         var file = Generate(shoppingList, items);
@@ -71,10 +66,8 @@ public class ExportPdf
         return $"ShoppingList-{temp}.pdf";
     }
 
-
     private byte[] Generate(ShoppingList shoppingList, IEnumerable<ShoppingItem> items)
     {
-        // code in your main method
         var document = Document.Create(container =>
         {
             container.Page(page =>
@@ -92,8 +85,6 @@ public class ExportPdf
                         .PaddingVertical(1, Unit.Centimetre)
                         .Column(column =>
                         {
-                            //column.Spacing(20);
-
                             foreach (var item in items)
                             {
                                 column.Item().Row(row =>

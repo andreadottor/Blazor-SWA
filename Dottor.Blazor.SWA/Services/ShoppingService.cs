@@ -9,16 +9,18 @@ public class ShoppingService : IShoppingService
 {
     private readonly HttpClient _httpClient;
     private readonly ILogger<ShoppingService> _logger;
-    private readonly AuthenticationStateProvider _authenticationStateProvider;
+    private readonly AuthenticationStateProvider _authStateProvider;
 
     public ShoppingService(HttpClient httpClient,
                            ILogger<ShoppingService> logger,
                            AuthenticationStateProvider authenticationStateProvider)
     {
-        _httpClient = httpClient;
-        _logger = logger;
-        _authenticationStateProvider = authenticationStateProvider;
+        _httpClient        = httpClient;
+        _logger            = logger;
+        _authStateProvider = authenticationStateProvider;
     }
+
+    #region Shopping lists
 
     public async Task<IEnumerable<ShoppingList>> GetShoppingListsAsync()
     {
@@ -61,10 +63,10 @@ public class ShoppingService : IShoppingService
 
     public async Task SetShoppingListFavoriteAsync(Guid shoppingList, bool favorite)
     {
-        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var authState   = await _authStateProvider.GetAuthenticationStateAsync();
         var userIdClaim = authState.User.FindFirst(ClaimTypes.NameIdentifier);
 
-        var response = await _httpClient.PatchAsJsonAsync($"data-api/rest/lists/id/{shoppingList}",
+        var response    = await _httpClient.PatchAsJsonAsync($"data-api/rest/lists/id/{shoppingList}",
                 new
                 {
                     favorite = favorite,
@@ -73,10 +75,13 @@ public class ShoppingService : IShoppingService
         response.EnsureSuccessStatusCode();
     }
 
+    #endregion
+
+    #region Shopping list items
 
     public async Task<IEnumerable<ShoppingItem>> GetItemsAsync(Guid shoppingList)
     {
-        var filter = $"$filter=shoppingListId eq {shoppingList}";
+        var filter  = $"$filter=shoppingListId eq {shoppingList}";
         var orderBy = $"$orderby=important desc, name";
         var results = await _httpClient.GetFromJsonAsync<DABResult<IEnumerable<ShoppingItem>>>($"data-api/rest/items?{filter}&{orderBy}");
 
@@ -105,10 +110,10 @@ public class ShoppingService : IShoppingService
 
     public async Task SetItemQuantityAsync(Guid itemId, int? quantity)
     {
-        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var authState   = await _authStateProvider.GetAuthenticationStateAsync();
         var userIdClaim = authState.User.FindFirst(ClaimTypes.NameIdentifier);
 
-        var response = await _httpClient.PatchAsJsonAsync($"data-api/rest/items/id/{itemId}",
+        var response    = await _httpClient.PatchAsJsonAsync($"data-api/rest/items/id/{itemId}",
                 new
                 {
                     quantity = quantity,
@@ -119,10 +124,10 @@ public class ShoppingService : IShoppingService
 
     public async Task SetItemImportantAsync(Guid itemId, bool important)
     {
-        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+        var authState   = await _authStateProvider.GetAuthenticationStateAsync();
         var userIdClaim = authState.User.FindFirst(ClaimTypes.NameIdentifier);
 
-        var response = await _httpClient.PatchAsJsonAsync($"data-api/rest/items/id/{itemId}",
+        var response    = await _httpClient.PatchAsJsonAsync($"data-api/rest/items/id/{itemId}",
                 new
                 {
                     important = important,
@@ -130,4 +135,7 @@ public class ShoppingService : IShoppingService
                 });
         response.EnsureSuccessStatusCode();
     }
+
+    #endregion
+
 }
