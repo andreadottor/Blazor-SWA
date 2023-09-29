@@ -8,7 +8,7 @@
     [creationDate] DATETIME NOT NULL DEFAULT GETDATE(), 
     [important] BIT NOT NULL DEFAULT 0, 
     CONSTRAINT [PK_ShoppingItems] PRIMARY KEY CLUSTERED ([id] ASC),
-    CONSTRAINT [FK_ShoppingItems_ShoppingLists] FOREIGN KEY ([shoppingListId]) REFERENCES [dbo].[ShoppingLists] ([id]),
+    CONSTRAINT [FK_ShoppingItems_ShoppingLists] FOREIGN KEY ([shoppingListId]) REFERENCES [dbo].[ShoppingLists] ([id]) ON UPDATE NO ACTION ON DELETE CASCADE,
 );
 GO
 

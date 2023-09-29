@@ -2,6 +2,6 @@
 {
     public class DABResult<T> 
     {
-        public T? Value { get; set; }
+        public IEnumerable<T>? Value { get; set; }
     }
 }

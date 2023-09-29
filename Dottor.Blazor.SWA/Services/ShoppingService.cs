@@ -25,7 +25,7 @@ public class ShoppingService : IShoppingService
     public async Task<IEnumerable<ShoppingList>> GetShoppingListsAsync()
     {
         var orderBy = $"$orderby=favorite desc, title";
-        var results = await _httpClient.GetFromJsonAsync<DABResult<IEnumerable<ShoppingList>>>($"data-api/rest/lists?{orderBy}");
+        var results = await _httpClient.GetFromJsonAsync<DABResult<ShoppingList>>($"data-api/rest/lists?{orderBy}");
 
         if (results is null || results.Value is null)
         {
@@ -38,7 +38,7 @@ public class ShoppingService : IShoppingService
 
     public async Task<ShoppingList?> GetShoppingListAsync(Guid shoppingList)
     {
-        var results = await _httpClient.GetFromJsonAsync<DABResult<IEnumerable<ShoppingList>>>($"data-api/rest/lists/id/{shoppingList}");
+        var results = await _httpClient.GetFromJsonAsync<DABResult<ShoppingList>>($"data-api/rest/lists/id/{shoppingList}");
 
         if (results is null || results.Value is null)
         {
@@ -83,7 +83,7 @@ public class ShoppingService : IShoppingService
     {
         var filter  = $"$filter=shoppingListId eq {shoppingList}";
         var orderBy = $"$orderby=important desc, name";
-        var results = await _httpClient.GetFromJsonAsync<DABResult<IEnumerable<ShoppingItem>>>($"data-api/rest/items?{filter}&{orderBy}");
+        var results = await _httpClient.GetFromJsonAsync<DABResult<ShoppingItem>>($"data-api/rest/items?{filter}&{orderBy}");
 
         if (results is null || results.Value is null)
         {
