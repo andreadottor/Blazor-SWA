@@ -16,7 +16,6 @@
         {
             _configuration = config;
             _httpClient = httpClient;
-            //_httpClient = new HttpClient { BaseAddress = new Uri(environment.BaseAddress) };
         }
 
         public async override Task<AuthenticationState> GetAuthenticationStateAsync()
