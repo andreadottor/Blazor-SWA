@@ -58,7 +58,8 @@
         "exclude": [
             "/css/*",
             "/img/*",
-            "/js/*"
+            "/js/*",
+            "/sample-data/*"
         ]
     },
     "responseOverrides": {
