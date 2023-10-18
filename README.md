@@ -1,5 +1,5 @@
 # Blazor-SWA
-Demo sessione "Serverless Websites con Blazor e Azure Functions"
+Demo sessione "Serverless Websites con Blazor e Azure Functions".
 
 ## Azure Day Torino - 15.10.2023
 
